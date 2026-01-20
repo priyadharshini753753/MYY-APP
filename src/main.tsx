@@ -1,10 +1,17 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import MovieCard from "./MovieCard";
+import "./MovieCard.css";
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+function App() {
+  return (
+    <div style={{ padding: "20px" }}>
+      <MovieCard
+        title="Interstellar"
+        year="2014"
+        rating="8.6"
+        poster="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
+      />
+    </div>
+  );
+}
+
+export default App;
