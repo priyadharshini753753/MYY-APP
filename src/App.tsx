@@ -1,47 +1,86 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
-  const [url, setUrl] = useState("");
-  const [isValid, setIsValid] = useState<boolean | null>(null);
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const validateUrl = (value: string) => {
-    const urlRegex =
-      /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-./?%&=]*)?$/i;
+  useEffect(() => {
+    // minimum 2 characters rule
+    if (query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
 
-    setIsValid(urlRegex.test(value));
+    // debounce (API call delay)
+    const timer = setTimeout(() => {
+      fetchSuggestions();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const fetchSuggestions = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `https://dummyjson.com/products/search?q=${query}`
+      );
+      const data = await res.json();
+
+      const titles = data.products.map((p: any) => p.title);
+      setSuggestions(titles);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleChange = (e: any) => {
-    const value = e.target.value;
-    setUrl(value);
-
-    if (value === "") {
-      setIsValid(null);
-    } else {
-      validateUrl(value);
-    }
+  const handleSelect = (value: string) => {
+    setQuery(value);
+    setSuggestions([]);
   };
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h2>URL Validator</h2>
+      <h2>Dynamic Search Bar</h2>
 
       <input
         type="text"
-        placeholder="Enter URL"
-        value={url}
-        onChange={handleChange}
+        placeholder="Search products..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
         style={{ padding: "8px", width: "300px" }}
       />
 
-      <div style={{ marginTop: "10px", fontWeight: "bold" }}>
-        {isValid === true && (
-          <span style={{ color: "green" }}>✅ Valid URL</span>
-        )}
-        {isValid === false && (
-          <span style={{ color: "red" }}>❌ Invalid URL</span>
-        )}
-      </div>
+      {loading && <p>Loading...</p>}
+
+      {suggestions.length > 0 && (
+        <ul
+          style={{
+            listStyle: "none",
+            padding: 0,
+            marginTop: "5px",
+            width: "300px",
+            border: "1px solid #ccc",
+          }}
+        >
+          {suggestions.map((item, index) => (
+            <li
+              key={index}
+              onClick={() => handleSelect(item)}
+              style={{
+                padding: "8px",
+                cursor: "pointer",
+                borderBottom: "1px solid #eee",
+              }}
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
