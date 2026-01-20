@@ -1,19 +1,48 @@
-import MovieCard from "./MovieCard";
-
+import { useEffect, useState } from "react";
 
 function App() {
+  const [time, setTime] = useState(0);      // seconds
+  const [running, setRunning] = useState(false);
+
+  useEffect(() => {
+    let intervalId: number | undefined;
+
+    if (running) {
+      intervalId = window.setInterval(() => {
+        setTime((prev) => prev + 1);
+      }, 1000);
+    }
+
+    // cleanup
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [running]);
+
   return (
-    <div style={{ padding: "20px" }}>
-      <MovieCard
-        title="Interstellar"
-        year="2014"
-        genre="Sci-Fi"
-        rating="8.6"
-        poster="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-        overview="A team of explorers travel through a wormhole in space."
-      />
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h2>Hook Based Timer</h2>
+
+      <h1>{time} sec</h1>
+
+      <button onClick={() => setRunning(true)}>Start</button>
+      <button onClick={() => setRunning(false)} style={{ marginLeft: "10px" }}>
+        Pause
+      </button>
+      <button
+        onClick={() => {
+          setRunning(false);
+          setTime(0);
+        }}
+        style={{ marginLeft: "10px" }}
+      >
+        Reset
+      </button>
     </div>
   );
 }
 
 export default App;
+
