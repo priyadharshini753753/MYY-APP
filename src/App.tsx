@@ -1,48 +1,49 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function App() {
-  const [time, setTime] = useState(0);      // seconds
-  const [running, setRunning] = useState(false);
+  const [url, setUrl] = useState("");
+  const [isValid, setIsValid] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    let intervalId: number | undefined;
+  const validateUrl = (value: string) => {
+    const urlRegex =
+      /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-./?%&=]*)?$/i;
 
-    if (running) {
-      intervalId = window.setInterval(() => {
-        setTime((prev) => prev + 1);
-      }, 1000);
+    setIsValid(urlRegex.test(value));
+  };
+
+  const handleChange = (e: any) => {
+    const value = e.target.value;
+    setUrl(value);
+
+    if (value === "") {
+      setIsValid(null);
+    } else {
+      validateUrl(value);
     }
-
-    // cleanup
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [running]);
+  };
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h2>Hook Based Timer</h2>
+      <h2>URL Validator</h2>
 
-      <h1>{time} sec</h1>
+      <input
+        type="text"
+        placeholder="Enter URL"
+        value={url}
+        onChange={handleChange}
+        style={{ padding: "8px", width: "300px" }}
+      />
 
-      <button onClick={() => setRunning(true)}>Start</button>
-      <button onClick={() => setRunning(false)} style={{ marginLeft: "10px" }}>
-        Pause
-      </button>
-      <button
-        onClick={() => {
-          setRunning(false);
-          setTime(0);
-        }}
-        style={{ marginLeft: "10px" }}
-      >
-        Reset
-      </button>
+      <div style={{ marginTop: "10px", fontWeight: "bold" }}>
+        {isValid === true && (
+          <span style={{ color: "green" }}>✅ Valid URL</span>
+        )}
+        {isValid === false && (
+          <span style={{ color: "red" }}>❌ Invalid URL</span>
+        )}
+      </div>
     </div>
   );
 }
 
 export default App;
-
