@@ -1,86 +1,72 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function App() {
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    // minimum 2 characters rule
-    if (query.length < 2) {
-      setSuggestions([]);
-      return;
-    }
-
-    // debounce (API call delay)
-    const timer = setTimeout(() => {
-      fetchSuggestions();
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [query]);
-
-  const fetchSuggestions = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch(
-        `https://dummyjson.com/products/search?q=${query}`
-      );
-      const data = await res.json();
-
-      const titles = data.products.map((p: any) => p.title);
-      setSuggestions(titles);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  const rules = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
   };
 
-  const handleSelect = (value: string) => {
-    setQuery(value);
-    setSuggestions([]);
-  };
+  const isStrongPassword =
+    rules.length && rules.uppercase && rules.number && rules.special;
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h2>Dynamic Search Bar</h2>
+    <div style={{ padding: "20px", fontFamily: "Arial", maxWidth: "400px" }}>
+      <h2>Strong Password Validator</h2>
 
-      <input
-        type="text"
-        placeholder="Search products..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        style={{ padding: "8px", width: "300px" }}
-      />
+      <div style={{ marginBottom: "10px" }}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          style={{ padding: "8px", width: "100%" }}
+        />
+      </div>
 
-      {loading && <p>Loading...</p>}
+      <div style={{ marginBottom: "10px" }}>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ padding: "8px", width: "100%" }}
+        />
+      </div>
 
-      {suggestions.length > 0 && (
-        <ul
-          style={{
-            listStyle: "none",
-            padding: 0,
-            marginTop: "5px",
-            width: "300px",
-            border: "1px solid #ccc",
-          }}
-        >
-          {suggestions.map((item, index) => (
-            <li
-              key={index}
-              onClick={() => handleSelect(item)}
-              style={{
-                padding: "8px",
-                cursor: "pointer",
-                borderBottom: "1px solid #eee",
-              }}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul style={{ listStyle: "none", padding: 0 }}>
+        <li>
+          {rules.length ? "✅" : "❌"} At least 8 characters
+        </li>
+        <li>
+          {rules.uppercase ? "✅" : "❌"} At least 1 uppercase letter
+        </li>
+        <li>
+          {rules.number ? "✅" : "❌"} At least 1 number
+        </li>
+        <li>
+          {rules.special ? "✅" : "❌"} At least 1 special character
+        </li>
+      </ul>
+
+      <button
+        disabled={!isStrongPassword}
+        style={{
+          marginTop: "10px",
+          padding: "10px",
+          width: "100%",
+          backgroundColor: isStrongPassword ? "green" : "gray",
+          color: "white",
+          border: "none",
+          cursor: isStrongPassword ? "pointer" : "not-allowed",
+        }}
+      >
+        Submit
+      </button>
     </div>
   );
 }
