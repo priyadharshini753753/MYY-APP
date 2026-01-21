@@ -1,22 +1,17 @@
-type MovieCardProps = {
-  title: string;
-  year: string;
-  rating: string;
-  poster: string;
-};
+import MovieCard from "./MovieCard";
+import "./MovieCard.css";
 
-function MovieCard({ title, year, rating, poster }: MovieCardProps) {
+function App() {
   return (
-    <div className="movie-card">
-      <img src={poster} alt={title} className="movie-poster" />
-
-      <div className="movie-info">
-        <h3>{title}</h3>
-        <p>Year: {year}</p>
-        <p>⭐ Rating: {rating}</p>
-      </div>
+    <div style={{ padding: "20px" }}>
+      <MovieCard
+        title="Interstellar"
+        year="2014"
+        rating="8.6"
+        poster="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
+      />
     </div>
   );
 }
 
-export default MovieCard;
+export default App;

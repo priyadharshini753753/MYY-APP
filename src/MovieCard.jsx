@@ -1,15 +1,12 @@
-import "./MovieCard.css";
-
-function MovieCard(props) {
+function MovieCard({ title, year, rating, poster }) {
   return (
     <div className="movie-card">
-      <img src={props.poster} alt={props.title} className="movie-poster" />
+      <img src={poster} alt={title} className="movie-poster" />
 
       <div className="movie-info">
-        <h3>{props.title}</h3>
-        <p>{props.year} • {props.genre}</p>
-        <p>⭐ {props.rating}</p>
-        <p>{props.overview}</p>
+        <h3>{title}</h3>
+        <p>Year: {year}</p>
+        <p>⭐ Rating: {rating}</p>
       </div>
     </div>
   );
